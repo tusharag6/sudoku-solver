@@ -1,24 +1,48 @@
-// src/screens/SudokuUploadScreen/SudokuUploadScreen.js
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  Alert,
-  ImageBackground,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Button from "../../components/Button";
 import OutlineButton from "../../components/OutlineButton";
 const SudokuUploadScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
+  useEffect(() => {
+    requestCameraPermission();
+    requestGalleryPermission();
+  }, []);
+
+  const requestCameraPermission = async () => {
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Camera permission is required to take photos."
+        );
+      }
+    } catch (error) {
+      console.error("Error requesting camera permission:", error);
+    }
+  };
+
+  const requestGalleryPermission = async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Gallery permission is required to access photos."
+        );
+      }
+    } catch (error) {
+      console.error("Error requesting gallery permission:", error);
+    }
+  };
 
   const selectImageFromGallery = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        aspect: [4, 3],
         quality: 1,
       });
 
@@ -34,7 +58,6 @@ const SudokuUploadScreen = () => {
     try {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        aspect: [4, 3],
         quality: 1,
       });
 
@@ -61,13 +84,13 @@ const SudokuUploadScreen = () => {
         <OutlineButton title="Take Photo" onPress={takeImageFromCamera} />
       </View>
       {selectedImage ? (
-        <ImageBackground
+        <Image
           source={{ uri: selectedImage }}
           className="h-200 w-200 mb-4"
           resizeMode="contain"
         />
       ) : (
-        // <Text className="mb-4 text-foreground">No image selected</Text>
+        // <Text className="mt-4 text-foreground">No image selected</Text>
         ""
       )}
     </View>
