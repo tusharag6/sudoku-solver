@@ -3,12 +3,14 @@ import { View, Text, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Button from "../../components/Button";
 import OutlineButton from "../../components/OutlineButton";
+import { useNavigation } from "@react-navigation/native";
 const SudokuUploadScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   useEffect(() => {
     requestCameraPermission();
     requestGalleryPermission();
   }, []);
+  const navigation = useNavigation();
 
   const requestCameraPermission = async () => {
     try {
@@ -69,30 +71,37 @@ const SudokuUploadScreen = () => {
     }
   };
 
+  const onSolveButtonPressed = () => {
+    navigation.navigate("ProgressBar");
+  };
+
   return (
-    <View className="bg-background h-full flex flex-col justify-center items-center">
+    <View className="bg-background h-full flex flex-col items-center justify-between py-14">
       <View className="w-full p-10">
-        <Text className="text-3xl font-bold mb-2 text-foreground">
+        <Text className="text-3xl font-bold text-foreground">
           Greetings, Puzzler!
         </Text>
         <Text className="text-mutedForeground">
           Upload your Sudoku and let the magic unfold!
         </Text>
       </View>
-      <View className="flex flex-row justify-evenly w-full mb-4 mt-32">
+      <View className="flex flex-row px-10 justify-between w-full">
         <Button title="Upload from Gallery" onPress={selectImageFromGallery} />
         <OutlineButton title="Take Photo" onPress={takeImageFromCamera} />
       </View>
-      {selectedImage ? (
-        <Image
-          source={{ uri: selectedImage }}
-          className="h-200 w-200 mb-4"
-          resizeMode="contain"
-        />
-      ) : (
-        // <Text className="mt-4 text-foreground">No image selected</Text>
-        ""
-      )}
+      <View className="ml-60 w-24">
+        {selectedImage ? (
+          // <Image
+          //   source={{ uri: selectedImage }}
+          //   className="h-200 w-200 mb-4"
+          //   resizeMode="contain"
+          // />
+          <Button title="Solve" onPress={onSolveButtonPressed} />
+        ) : (
+          // <Text className="mt-4 text-foreground">No image selected</Text>
+          ""
+        )}
+      </View>
     </View>
   );
 };
