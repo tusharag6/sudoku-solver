@@ -13,7 +13,11 @@ export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="AppLoading" headerMode="none">
+      <Stack.Navigator
+        initialRouteName="AppLoading"
+        headerMode="none"
+        screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen name="AppLoading" component={LoadingScreen} />
         <Stack.Screen name="SudokuUpload" component={SudokuUploadScreen} />
         <Stack.Screen name="ProgressBar" component={ProgressBarScreen} />
