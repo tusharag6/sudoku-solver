@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, ImageBackground } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Button from "../../components/Button";
 import OutlineButton from "../../components/OutlineButton";
 import { useNavigation } from "@react-navigation/native";
+import { BlurView } from "@react-native-community/blur";
+
 const SudokuUploadScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   useEffect(() => {
@@ -76,33 +78,39 @@ const SudokuUploadScreen = () => {
   };
 
   return (
-    <View className="bg-background h-full flex flex-col items-center justify-between py-14">
-      <View className="w-full p-10">
-        <Text className="text-3xl font-bold text-foreground">
-          Greetings, Puzzler!
-        </Text>
-        <Text className="text-mutedForeground">
-          Upload your Sudoku and let the magic unfold!
-        </Text>
-      </View>
-      <View className="flex flex-row px-10 justify-between w-full">
-        <Button title="Upload from Gallery" onPress={selectImageFromGallery} />
-        <OutlineButton title="Take Photo" onPress={takeImageFromCamera} />
-      </View>
-      <View className="ml-60 w-24">
-        {selectedImage ? (
-          // <Image
-          //   source={{ uri: selectedImage }}
-          //   className="h-200 w-200 mb-4"
-          //   resizeMode="contain"
-          // />
-          <Button title="Solve" onPress={onSolveButtonPressed} />
+    <ImageBackground
+      source={require("../../../assets/bgimg.jpg")}
+      style={{
+        flex: 1,
+        justifyContent: "space-between",
+        paddingVertical: 14,
+        alignItems: "center",
+      }}
+    >
+      <View className="h-full flex flex-col justify-center">
+        <View className="w-full mb-4">
+          <Text className="text-4xl font-bold text-foreground mb-1">
+            Greetings, Puzzler!
+          </Text>
+          <Text className="text-foreground">
+            Upload your Sudoku and let the magic unfold!
+          </Text>
+        </View>
+        {!selectedImage ? (
+          <View className="flex flex-col">
+            <OutlineButton title="Take Photo" onPress={takeImageFromCamera} />
+            <Button
+              title="Upload from Gallery"
+              onPress={selectImageFromGallery}
+            />
+          </View>
         ) : (
-          // <Text className="mt-4 text-foreground">No image selected</Text>
-          ""
+          <View>
+            <Button title="Solve" onPress={onSolveButtonPressed} />
+          </View>
         )}
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
