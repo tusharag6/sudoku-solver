@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, ImageBackground } from "react-native";
+import { ImageBackground } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import Button from "../../components/Button";
-import OutlineButton from "../../components/OutlineButton";
 import { useNavigation } from "@react-navigation/native";
-import { BlurView } from "@react-native-community/blur";
+import DisplayImageComponent from "../../components/DisplayImage";
+import GreetingsComponent from "../../components/Greetings";
 
 const SudokuUploadScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -76,7 +75,7 @@ const SudokuUploadScreen = () => {
   const onSolveButtonPressed = () => {
     navigation.navigate("ProgressBar");
   };
-
+  console.log(selectedImage);
   return (
     <ImageBackground
       source={require("../../../assets/bgimg.jpg")}
@@ -87,29 +86,17 @@ const SudokuUploadScreen = () => {
         alignItems: "center",
       }}
     >
-      <View className="h-full flex flex-col justify-center">
-        <View className="w-full mb-4">
-          <Text className="text-4xl font-bold text-foreground mb-1">
-            Greetings, Puzzler!
-          </Text>
-          <Text className="text-foreground">
-            Upload your Sudoku and let the magic unfold!
-          </Text>
-        </View>
-        {!selectedImage ? (
-          <View className="flex flex-col">
-            <OutlineButton title="Take Photo" onPress={takeImageFromCamera} />
-            <Button
-              title="Upload from Gallery"
-              onPress={selectImageFromGallery}
-            />
-          </View>
-        ) : (
-          <View>
-            <Button title="Solve" onPress={onSolveButtonPressed} />
-          </View>
-        )}
-      </View>
+      {selectedImage ? (
+        <DisplayImageComponent
+          selectedImage={selectedImage}
+          onSolveButtonPressed={onSolveButtonPressed}
+        />
+      ) : (
+        <GreetingsComponent
+          takePicture={takeImageFromCamera}
+          uploadFromGallery={selectImageFromGallery}
+        />
+      )}
     </ImageBackground>
   );
 };
