@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground } from "react-native";
+import { ImageBackground, BackHandler } from "react-native";
 import DisplaySudokuComponent from "../../components/DisplaySudoku";
 import SolvingComponent from "../../components/Solving";
 import { useNavigation } from "@react-navigation/native";
@@ -10,6 +10,35 @@ const ProgressBarScreen = ({ route }) => {
   const [data, setData] = useState(null);
 
   const navigation = useNavigation();
+
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     Alert.alert("Are you sure you want to go back?", [
+  //       {
+  //         text: "Cancel",
+  //         onPress: () => null,
+  //         style: "cancel",
+  //       },
+  //       { text: "YES", onPress: () => navigation.navigate("SudokuUpload") },
+  //     ]);
+  //     return true;
+  //   };
+
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     backAction
+  //   );
+
+  //   return () => backHandler.remove();
+  // }, []);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => true
+    );
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {

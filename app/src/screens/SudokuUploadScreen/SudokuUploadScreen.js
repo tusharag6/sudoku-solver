@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ImageBackground, Alert } from "react-native";
+import { ImageBackground, Alert, BackHandler } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useNavigation } from "@react-navigation/native";
@@ -11,6 +11,27 @@ const SudokuUploadScreen = () => {
   const [selectedImageBase64, setSelectedImageBase64] = useState(null);
 
   useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to Exit?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+  useEffect(() => {
     requestCameraPermission();
     requestGalleryPermission();
   }, []);
@@ -19,7 +40,6 @@ const SudokuUploadScreen = () => {
 
   useEffect(() => {
     return navigation.addListener("focus", () => {
-      // Reset selectedImage when the screen is focused (after navigation)
       setSelectedImage(null);
     });
   }, [navigation]);
@@ -52,20 +72,6 @@ const SudokuUploadScreen = () => {
     }
   };
 
-  const saveImageToFolder = async (imageUri) => {
-    const localUri = `${FileSystem.documentDirectory}yourImageFileName.jpg`;
-    try {
-      await FileSystem.copyAsync({
-        from: imageUri,
-        to: localUri,
-      });
-      console.log("Image saved to:", localUri);
-      return localUri;
-    } catch (error) {
-      console.error("Error saving image:", error);
-    }
-  };
-
   const convertImageToBase64 = async (imageUri) => {
     try {
       const base64 = await FileSystem.readAsStringAsync(imageUri, {
@@ -85,9 +91,7 @@ const SudokuUploadScreen = () => {
       });
 
       if (!result.canceled) {
-        const savedImagePath = await saveImageToFolder(result.assets[0].uri);
-        const base64 = await convertImageToBase64(savedImagePath);
-
+        const base64 = await convertImageToBase64(result.assets[0].uri);
         setSelectedImage(result.assets[0].uri);
         setSelectedImageBase64(base64);
       }
@@ -104,9 +108,7 @@ const SudokuUploadScreen = () => {
       });
 
       if (!result.canceled) {
-        const savedImagePath = await saveImageToFolder(result.assets[0].uri);
         const base64 = await convertImageToBase64(result.assets[0].uri);
-
         setSelectedImage(result.assets[0].uri);
         setSelectedImageBase64(base64);
       }
@@ -125,6 +127,10 @@ const SudokuUploadScreen = () => {
     }
   };
 
+  const onSolveAnotherPressed = async () => {
+    setSelectedImage(null);
+  };
+
   return (
     <ImageBackground
       source={require("../../../assets/bgimg.jpg")}
@@ -139,6 +145,7 @@ const SudokuUploadScreen = () => {
         <DisplayImageComponent
           selectedImage={selectedImage}
           onSolveButtonPressed={onSolveButtonPressed}
+          onSolveAnotherPressed={onSolveAnotherPressed}
         />
       ) : (
         <GreetingsComponent
