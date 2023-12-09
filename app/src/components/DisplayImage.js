@@ -11,7 +11,7 @@ const DisplayImageComponent = ({ selectedImage, onSolveButtonPressed }) => {
         </Text>
         <Image
           source={{ uri: selectedImage }}
-          style={{ width: 300, height: 350 }}
+          style={{ width: 350, height: 380 }}
         />
         <View className="mt-4">
           <Button title="Solve" onPress={onSolveButtonPressed} />

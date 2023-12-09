@@ -5,7 +5,7 @@ from tensorflow import keras
 
 
 def intializePredectionModel():
-    model = keras.models.load_model('models/digit_model_nn.h5')
+    model = keras.models.load_model('models/myModel.h5')
     return model
 
 

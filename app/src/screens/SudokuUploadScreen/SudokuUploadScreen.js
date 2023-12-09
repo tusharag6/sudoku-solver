@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { ImageBackground } from "react-native";
+import { ImageBackground, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 import { useNavigation } from "@react-navigation/native";
 import DisplayImageComponent from "../../components/DisplayImage";
 import GreetingsComponent from "../../components/Greetings";
 
 const SudokuUploadScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImageBase64, setSelectedImageBase64] = useState(null);
+
   useEffect(() => {
     requestCameraPermission();
     requestGalleryPermission();
   }, []);
+
   const navigation = useNavigation();
 
   const requestCameraPermission = async () => {
@@ -42,6 +46,31 @@ const SudokuUploadScreen = () => {
     }
   };
 
+  const saveImageToFolder = async (imageUri) => {
+    const localUri = `${FileSystem.documentDirectory}yourImageFileName.jpg`;
+    try {
+      await FileSystem.copyAsync({
+        from: imageUri,
+        to: localUri,
+      });
+      console.log("Image saved to:", localUri);
+      return localUri;
+    } catch (error) {
+      console.error("Error saving image:", error);
+    }
+  };
+
+  const convertImageToBase64 = async (imageUri) => {
+    try {
+      const base64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      return base64;
+    } catch (error) {
+      console.error("Error converting image to base64:", error);
+    }
+  };
+
   const selectImageFromGallery = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -50,7 +79,11 @@ const SudokuUploadScreen = () => {
       });
 
       if (!result.canceled) {
+        const savedImagePath = await saveImageToFolder(result.assets[0].uri);
+        const base64 = await convertImageToBase64(savedImagePath);
+
         setSelectedImage(result.assets[0].uri);
+        setSelectedImageBase64(base64);
       }
     } catch (error) {
       console.error("Error selecting image from gallery:", error);
@@ -65,17 +98,27 @@ const SudokuUploadScreen = () => {
       });
 
       if (!result.canceled) {
+        const savedImagePath = await saveImageToFolder(result.assets[0].uri);
+        const base64 = await convertImageToBase64(result.assets[0].uri);
+
         setSelectedImage(result.assets[0].uri);
+        setSelectedImageBase64(base64);
       }
     } catch (error) {
       console.error("Error taking image from camera:", error);
     }
   };
 
-  const onSolveButtonPressed = () => {
-    navigation.navigate("ProgressBar");
+  const onSolveButtonPressed = async () => {
+    if (selectedImageBase64) {
+      navigation.navigate("ProgressBar", {
+        imageBase64: selectedImageBase64,
+      });
+    } else {
+      Alert.alert("Error", "No image selected");
+    }
   };
-  console.log(selectedImage);
+
   return (
     <ImageBackground
       source={require("../../../assets/bgimg.jpg")}
