@@ -17,4 +17,5 @@ tensorflow-estimator==2.15.0
 tensorflow-io-gcs-filesystem==0.34.0
 gunicorn
 streamlit
-libgl1
+libgl1  
+libgl1-mesa-glx
