@@ -19,11 +19,11 @@ def solve_sudoku_from_image(image_base64):
         image_data = base64.b64decode(image_base64)
         nparr = np.frombuffer(image_data, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        cv2.imwrite("0.jpg", img)
+        # cv2.imwrite("0.jpg", img)
         img = cv2.resize(img, (widthImg, heightImg))
         imgBlank = np.zeros((heightImg, widthImg, 3), np.uint8)
         imgThreshold = preProcess(img)
-        cv2.imwrite("1.jpg", imgThreshold)
+        # cv2.imwrite("1.jpg", imgThreshold)
 
         # Find Contours
         imgContours = img.copy()
@@ -31,7 +31,7 @@ def solve_sudoku_from_image(image_base64):
         contours, hierarchy = cv2.findContours(
             imgThreshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cv2.drawContours(imgContours, contours, -1, (0, 0, 255), 3)
-        cv2.imwrite("2.jpg", imgContours)
+        # cv2.imwrite("2.jpg", imgContours)
 
         # Find the biggest Contour
         biggest, maxArea = biggestContour(contours)
@@ -47,7 +47,7 @@ def solve_sudoku_from_image(image_base64):
                 img, matrix, (widthImg, heightImg))
             imgDetectedDigits = imgBlank.copy()
             imgWarpColored = cv2.cvtColor(imgWarpColored, cv2.COLOR_BGR2GRAY)
-            cv2.imwrite("3.jpg", imgWarpColored)
+            # cv2.imwrite("3.jpg", imgWarpColored)
 
             # Split the image and find each digit available
             imgSolvedDigits = imgBlank.copy()
@@ -71,7 +71,7 @@ def solve_sudoku_from_image(image_base64):
                     flatList.append(item)
             solvedNumbers = flatList * posArray
             imgSolvedDigits = displayNumbers(imgSolvedDigits, solvedNumbers)
-            cv2.imwrite("4.jpg", imgSolvedDigits)
+            # cv2.imwrite("4.jpg", imgSolvedDigits)
 
             # overlay solution
             pts2 = np.float32(biggest)
@@ -86,8 +86,8 @@ def solve_sudoku_from_image(image_base64):
             imgDetectedDigits = drawGrid(imgDetectedDigits)
             imgSolvedDigits = drawGrid(imgSolvedDigits)
 
-            output_path = os.path.join("images", "final.jpg")
-            cv2.imwrite(output_path, inv_perspective)
+            # output_path = os.path.join("images", "final.jpg")
+            # cv2.imwrite(output_path, inv_perspective)
 
             return inv_perspective
         else:
