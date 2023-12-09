@@ -1,8 +1,8 @@
+import streamlit as st
 import cv2
 import numpy as np
 from Sudoku_Main import solve_sudoku_from_image
 import base64
-import streamlit as st
 
 
 def solve_sudoku(image_base64):
