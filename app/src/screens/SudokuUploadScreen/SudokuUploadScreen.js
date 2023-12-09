@@ -17,6 +17,12 @@ const SudokuUploadScreen = () => {
 
   const navigation = useNavigation();
 
+  useEffect(() => {
+    return navigation.addListener("focus", () => {
+      // Reset selectedImage when the screen is focused (after navigation)
+      setSelectedImage(null);
+    });
+  }, [navigation]);
   const requestCameraPermission = async () => {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();

@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, Platform } from "react-native";
-import * as Progress from "react-native-progress";
+import { ImageBackground } from "react-native";
+import DisplaySudokuComponent from "../../components/DisplaySudoku";
+import SolvingComponent from "../../components/Solving";
+import { useNavigation } from "@react-navigation/native";
 
 const ProgressBarScreen = ({ route }) => {
   const { imageBase64 } = route.params;
-  const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prevProgress) => {
-        const newProgress = prevProgress + 0.1;
-        return newProgress >= 1 ? 0 : newProgress;
-      });
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, []);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,41 +37,29 @@ const ProgressBarScreen = ({ route }) => {
     fetchData();
   }, [imageBase64]);
 
+  const onHomeButtonPressed = () => {
+    navigation.navigate("SudokuUpload");
+  };
+
   return (
-    <View
+    <ImageBackground
+      source={require("../../../assets/bgimg.jpg")}
       style={{
         flex: 1,
-        justifyContent: "center",
+        justifyContent: "space-between",
+        paddingVertical: 14,
         alignItems: "center",
-        backgroundColor: "#FFFFFF",
       }}
     >
       {loading ? (
-        <View style={{ width: "100%", paddingLeft: 10, paddingBottom: 5 }}>
-          <Text style={{ color: "#00f", fontSize: 20 }}>Solving...</Text>
-        </View>
+        <SolvingComponent />
       ) : (
-        <View style={{ width: "100%", paddingLeft: 10, paddingBottom: 5 }}>
-          <Text style={{ color: "#00f", fontSize: 20 }}>Solved!</Text>
-          <Image
-            style={{
-              // width: 300,
-              height: 350,
-              borderWidth: 2,
-              borderColor: "black",
-            }}
-            source={{
-              uri: `data:${data.mime_type};base64,${data.solved_image64}`,
-            }}
-          />
-        </View>
+        <DisplaySudokuComponent
+          data={data}
+          onHomeButtonPressed={onHomeButtonPressed}
+        />
       )}
-      {/* {Platform.OS === "android" ? (
-        <Progress.Bar progress={progress} color="#fff" width={300} />
-      ) : (
-        <Progress.ProgressViewIOS progress={progress} />
-      )} */}
-    </View>
+    </ImageBackground>
   );
 };
 
